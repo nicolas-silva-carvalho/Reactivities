@@ -1,53 +1,23 @@
-import { useState } from "react";
-import { CssBaseline, Container, Box, Typography } from "@mui/material";
+import { CssBaseline, Container, Box } from "@mui/material";
 import NavBar from "./NavBar";
-import ActivityDashboard from "../../features/activities/dashboard/ActivityDashboard";
-import { useActivities } from "../../lib/hooks/useActivities";
+import { Outlet, useLocation } from "react-router";
+import HomePage from "../../features/activities/home/HomePage";
 
 function App() {
-  const [selectedActivity, setSelectedActivity] = useState<
-    Activity | undefined
-  >(undefined);
-  const [editMode, setEditMode] = useState(false);
-  const { activities, isPending } = useActivities();
-
-  const handleSelectActivity = (id: string) => {
-    setSelectedActivity(activities!.find((x) => x.id === id));
-  };
-
-  const handleCancelSelectActivity = () => {
-    setSelectedActivity(undefined);
-  };
-
-  const handleOpenForm = (id?: string) => {
-    if (id) handleSelectActivity(id);
-    else handleCancelSelectActivity();
-    setEditMode(true);
-  };
-
-  const handleFormClose = () => {
-    setEditMode(false);
-  };
-
+  const location = useLocation();
   return (
     <Box sx={{ bgcolor: "#eeeeee", minHeight: "100vh" }}>
       <CssBaseline />
-      <NavBar openForm={handleOpenForm} />
-      <Container maxWidth="xl" sx={{ marginTop: 3 }}>
-        {!activities || isPending ? (
-          <Typography>Loading...</Typography>
-        ) : (
-          <ActivityDashboard
-            activities={activities}
-            selectedActivity={selectedActivity}
-            selectActivity={handleSelectActivity}
-            cancelSelectActivity={handleCancelSelectActivity}
-            editMode={editMode}
-            openForm={handleOpenForm}
-            closeForm={handleFormClose}
-          />
-        )}
-      </Container>
+      {location.pathname === "/" ? (
+        <HomePage />
+      ) : (
+        <>
+          <NavBar />
+          <Container maxWidth="xl" sx={{ marginTop: 3 }}>
+            <Outlet />
+          </Container>
+        </>
+      )}
     </Box>
   );
 }
